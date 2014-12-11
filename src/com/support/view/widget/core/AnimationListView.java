@@ -27,6 +27,7 @@ public class AnimationListView extends ListView implements PageScrollingListener
 
     private static final int MAX_Y_OVERSCROLL_DISTANCE = 100;
     private static final int ANIMATION_DURATION = 400;
+    private static final boolean DEFAULT_OVERSCROLL_ENABLE = true;
 
     private Context mContext;
 
@@ -57,6 +58,8 @@ public class AnimationListView extends ListView implements PageScrollingListener
 
     private boolean isPageMoving;
 
+    private boolean isClonedDividerEnable = false;
+
     private Interpolator slopeInterpolator;
 
     private Rect mTempRect;
@@ -72,8 +75,9 @@ public class AnimationListView extends ListView implements PageScrollingListener
                 reboundAnimation.setDuration(reboundTime);
                 startAnimation(reboundAnimation);
                 reboundAnimation.setAnimationListener(new ReboundListener());
-                //L.d("********resetOverScrollRunnable,scrollY=" + scrollY);
             }
+            if (scrollY == 0)
+                isOverScrolling = false;
         }
     };
 
@@ -109,8 +113,8 @@ public class AnimationListView extends ListView implements PageScrollingListener
         reboundTime = ANIMATION_DURATION;
         slopeInterpolator = new LinearInterpolator();
         mTempRect = new Rect();
-		isOverScrolling = false;
-        enableOverScroll = true;
+        isOverScrolling = false;
+        enableOverScroll = DEFAULT_OVERSCROLL_ENABLE;
 
         locations = new Location[AnimationController.SAMPLE_SIZE];
         for (int i = 0; i < locations.length; i++) {
@@ -196,7 +200,6 @@ public class AnimationListView extends ListView implements PageScrollingListener
 
             int delta = Math.abs(arrow - i);
             y1 = Math.min(1f, (1f / factor - itemsSlopeStep * delta) * progress);
-            //y1 = slopeInterpolator.getInterpolation(pageScrolling);
             float transX = getWidth() - getWidth() * y1;
             if (pageScrolling > 0) {
                 itemView.setTranslationX(transX);
@@ -271,6 +274,7 @@ public class AnimationListView extends ListView implements PageScrollingListener
         super.onScrollChanged(l, t, oldl, oldt);
 
         if (isOverScrolling) {
+            int count = getChildCount() - arrow;
             float space = Math.abs(t);
             float delta = 0;
             //scrollY < 0, overScroll on head
@@ -281,10 +285,13 @@ public class AnimationListView extends ListView implements PageScrollingListener
             }
 
             //scrollY >0 ,overScroll on foot
-            for (int i = arrow; i < getChildCount() && t >= 0; i++) {
-                // View viewItem = getChildAt(i - 1);
-                // delta = delta + 2 * space * (arrow + 1 - i) / (arrow * (arrow + 1));
-                // viewItem.setTranslationY(-delta);
+            delta = 0;
+            for (int i = 1; i < count && t >= 0; i++) {
+                View viewItem = getChildAt(i + arrow);
+                if (viewItem != null) {
+                    delta = delta + 2 * space * (count - i) / (count * (count - 1));
+                    viewItem.setTranslationY(delta);
+                }
             }
         }
 
@@ -346,9 +353,10 @@ public class AnimationListView extends ListView implements PageScrollingListener
 
     private void enableClonedDivider(boolean enable) {
         Drawable divider = getDivider();
-        if (divider != null) {
+        if (divider != null && isClonedDividerEnable != enable) {
             divider.setAlpha(enable ? 0 : 255);
             mDivider.setAlpha(enable ? 255 : 0);
+            isClonedDividerEnable = enable;
         }
     }
 
