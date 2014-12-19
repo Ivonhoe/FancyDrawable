@@ -1,23 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical" >
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/text1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_weight="1.0"
-        android:gravity="center"
-        android:text="页卡1"
-        android:textColor="#000000"
-        android:textSize="22.0dip" />
-
-    <com.support.view.widget.core.AnimationListView
-            android:layout_width="match_parent"
+    <com.support.view.progressbar.SmoothProgressBar
+            android:id="@+id/smoothProgress"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/listView1"
-            android:divider="#FFCC00"
-            android:dividerHeight="4px"/>
+            android:indeterminate="true"
+            android:indeterminateOnly="false"/>
+
+    <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+        <Button
+                android:id="@+id/start"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/app_name"/>
+        <Button
+                android:id="@+id/stop"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/app_name"/>
+    </LinearLayout>
 </LinearLayout>

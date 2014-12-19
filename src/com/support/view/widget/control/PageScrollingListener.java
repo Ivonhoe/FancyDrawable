@@ -5,9 +5,9 @@ package com.support.view.widget.control;
  */
 public interface PageScrollingListener {
 
-    public Location[] onFindPageScroll(float progress);
+    public Location[] onFindPageScroll(float progress, float rawY);
 
-    public void onPageScrolling(float pageScrolling, float downY);
+    public void onPageScrolling(float pageScrolling);
 
     public void onEndPageScroll();
 

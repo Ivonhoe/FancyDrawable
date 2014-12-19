@@ -1,5 +1,6 @@
 package com.support.view.widget.core;
 
+import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Rect;
@@ -25,11 +26,14 @@ import com.support.view.widget.utils.L;
  */
 public class AnimationListView extends ListView implements PageScrollingListener {
 
-    private static final int MAX_Y_OVERSCROLL_DISTANCE = 100;
+    private static final int MAX_Y_OVERSCROLL_DISTANCE = 30;
     private static final int ANIMATION_DURATION = 400;
     private static final boolean DEFAULT_OVERSCROLL_ENABLE = true;
+    private static final boolean DEFAULT_ITEM_ANIMATION_ENABLE = false;
 
     private Context mContext;
+
+    private DisplayMetrics metrics;
 
     private AnimationImpl animationImpl;
 
@@ -54,11 +58,13 @@ public class AnimationListView extends ListView implements PageScrollingListener
 
     private boolean isOverScrolling;
 
-    private boolean enableOverScroll;
-
     private boolean isPageMoving;
 
-    private boolean isClonedDividerEnable = false;
+    private boolean enableClonedDivider = false;
+
+    private boolean enableOverScroll;
+
+    private boolean enableItemAnimation;
 
     private Interpolator slopeInterpolator;
 
@@ -106,7 +112,7 @@ public class AnimationListView extends ListView implements PageScrollingListener
         //get the density of the screen and do some maths with it on the max overScroll distance
         //variable so that you get similar behaviors no matter what the screen size
 
-        final DisplayMetrics metrics = mContext.getResources().getDisplayMetrics();
+        metrics = mContext.getResources().getDisplayMetrics();
         final float density = metrics.density;
 
         maxYOverScrollDistance = (int) (density * MAX_Y_OVERSCROLL_DISTANCE);
@@ -115,6 +121,7 @@ public class AnimationListView extends ListView implements PageScrollingListener
         mTempRect = new Rect();
         isOverScrolling = false;
         enableOverScroll = DEFAULT_OVERSCROLL_ENABLE;
+        enableItemAnimation = DEFAULT_ITEM_ANIMATION_ENABLE;
 
         locations = new Location[AnimationController.SAMPLE_SIZE];
         for (int i = 0; i < locations.length; i++) {
@@ -147,7 +154,7 @@ public class AnimationListView extends ListView implements PageScrollingListener
     }
 
     public void setAnimationEnable(boolean enable) {
-
+        enableItemAnimation = enable;
     }
 
     public void setOverScrollAnimationEnable(boolean enable) {
@@ -155,7 +162,7 @@ public class AnimationListView extends ListView implements PageScrollingListener
     }
 
     @Override
-    public Location[] onFindPageScroll(float progress) {
+    public Location[] onFindPageScroll(float progress, float rawY) {
         if (getVisibility() != VISIBLE) {
             return null;
         }
@@ -171,14 +178,13 @@ public class AnimationListView extends ListView implements PageScrollingListener
             if (locations[i].isClear()) {
                 locations[i].x = (temp[0] + getWidth() / 2f);
                 locations[i].y = temp[1];
-                if (i == locations.length - 1) {
-                    return locations;
+                if (i != locations.length - 1) {
+                    return null;
                 }
-                return null;
             }
-
         }
 
+        computeTouchedItemIndex(rawY);
         return locations;
     }
 
@@ -187,10 +193,9 @@ public class AnimationListView extends ListView implements PageScrollingListener
     * Page scroll from right to left, pageScrolling in [-1,0]
     * */
     @Override
-    public void onPageScrolling(float pageScrolling, float y) {
+    public void onPageScrolling(float pageScrolling) {
         float progress = pageScrolling > 0 ? pageScrolling : 1f + pageScrolling;
 
-        computeTouchedItemIndex(y - locations[0].y);
         int number = Math.max(arrow, visibleItemsCount - arrow);
         itemsSlopeStep = (1f - factor) / (number * factor);
 
@@ -223,30 +228,45 @@ public class AnimationListView extends ListView implements PageScrollingListener
         }
     }
 
-    private int computeTouchedItemIndex(float y) {
+    private int computeTouchedItemIndex(float rawY) {
         int firstVisiblePosition = getFirstVisiblePosition();
         int lastVisiblePosition = getLastVisiblePosition();
         visibleItemsCount = lastVisiblePosition - firstVisiblePosition + 1;
-        if (arrow != -1) {
-            return arrow;
+
+        arrow = 0;
+        for (int i = 0; i < visibleItemsCount; i++) {
+            getChildAt(i).getGlobalVisibleRect(mTempRect);
+            if (mTempRect.bottom >= rawY) {
+                arrow = i;
+                break;
+            }
         }
 
-        if (y < 0 || y > getHeight()) {
-            arrow = 0;
-            return arrow;
-        }
-
-        arrow = Math.max((int) y * visibleItemsCount / getHeight(), 0);
+        maxYOverScrollDistance = (int) (metrics.density * MAX_Y_OVERSCROLL_DISTANCE * Math.min(arrow, 2.5));
+//        L.d("count=" + visibleItemsCount + ",first=" + firstVisiblePosition + ",last=" +
+//                lastVisiblePosition + ",arrow=" + arrow +",maxYOverScrollDistance="+maxYOverScrollDistance);
         return arrow;
+    }
+
+    private void onTouchItemAnimation(float rawX) {
+        View touchView = getChildAt(arrow);
+        if(touchView != null){
+            ObjectAnimator animator = ObjectAnimator.ofFloat(touchView, "scaleY", 1f, 0.8f);
+            animator.setDuration(200);
+            //animator.start();;
+        }
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent ev) {
         if (ev.getAction() == MotionEvent.ACTION_DOWN) {
-            computeTouchedItemIndex(ev.getY());
+            computeTouchedItemIndex(ev.getRawY());
+            onTouchItemAnimation(ev.getRawX());
             isActionFinish = false;
         } else if (ev.getAction() == MotionEvent.ACTION_UP) {
             isActionFinish = true;
+        } else if(ev.getAction() == MotionEvent.ACTION_MOVE) {
+
         }
         return super.onTouchEvent(ev);
     }
@@ -327,7 +347,6 @@ public class AnimationListView extends ListView implements PageScrollingListener
                 mDivider.setBounds(bounds);
                 mDivider.draw(canvas);
             }
-            // 重写版本...
         }
     }
 
@@ -353,10 +372,10 @@ public class AnimationListView extends ListView implements PageScrollingListener
 
     private void enableClonedDivider(boolean enable) {
         Drawable divider = getDivider();
-        if (divider != null && isClonedDividerEnable != enable) {
+        if (divider != null && enableClonedDivider != enable) {
             divider.setAlpha(enable ? 0 : 255);
             mDivider.setAlpha(enable ? 255 : 0);
-            isClonedDividerEnable = enable;
+            enableClonedDivider = enable;
         }
     }
 
@@ -386,7 +405,6 @@ public class AnimationListView extends ListView implements PageScrollingListener
 
         @Override
         public void onAnimationStart(Animation animation) {
-
         }
 
         @Override
@@ -396,7 +414,6 @@ public class AnimationListView extends ListView implements PageScrollingListener
 
         @Override
         public void onAnimationRepeat(Animation animation) {
-
         }
     }
 }

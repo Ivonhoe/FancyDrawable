@@ -59,14 +59,14 @@ public class AnimationController {
         progress = progress * scrollToRight;
 
         if (mListener != null) {
-            mListener.onPageScrolling(progress, downY);
+            mListener.onPageScrolling(progress);
         } else if (checkTimes > SAMPLE_SIZE) {
             return;
         } else if (checkTimes == SAMPLE_SIZE) {
             PageScrollingListener listener = getCurrentListener(progress);
             if (listener != null) {
                 mListener = listener;
-                mListener.onPageScrolling(progress, downY);
+                mListener.onPageScrolling(progress);
             }
             checkTimes++;
         } else {
@@ -83,7 +83,7 @@ public class AnimationController {
         float minDistance = Float.MAX_VALUE;
         for (int i = 0; i < registeredView.size(); i++) {
             PageScrollingListener listener = registeredView.valueAt(i);
-            Location[] locations = listener.onFindPageScroll(scrollProgress);
+            Location[] locations = listener.onFindPageScroll(scrollProgress, downY);
             if (locations == null) {
                 continue;
             }

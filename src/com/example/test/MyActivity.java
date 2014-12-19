@@ -11,6 +11,8 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import com.support.view.progressbar.SmoothProgressBar;
 import com.support.view.widget.core.AnimationListView;
 import com.support.view.widget.control.AnimationController;
 import com.support.view.widget.core.ViewPagerDecorator;
@@ -19,11 +21,13 @@ import com.support.view.widget.sample.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MyActivity extends Activity {
+public class MyActivity extends Activity implements View.OnClickListener {
 
     private AnimationListView listView1;
     private AnimationListView listView2;
-    private AnimationListView listView3;
+    private SmoothProgressBar smoothProgressBar;
+    private Button progressStartButton;
+    private Button progressStopButton;
 
     private View view1, view2, view3;
     private ViewPagerDecorator viewPager;
@@ -31,8 +35,6 @@ public class MyActivity extends Activity {
     private PagerTabStrip pagerTabStrip;
     private List<View> viewList;
     private List<String> titleList;
-
-    private float downY;
 
     /**
      * Called when the activity is first created.
@@ -48,9 +50,7 @@ public class MyActivity extends Activity {
     private void initView() {
         viewPager = (ViewPagerDecorator) findViewById(R.id.viewpager);
         pagerTabStrip = (PagerTabStrip) findViewById(R.id.pagertab);
-        //pagerTabStrip.setTabIndicatorColor(getResources().getColor(R.color.gold));
         pagerTabStrip.setDrawFullUnderline(false);
-        //pagerTabStrip.setBackgroundColor(getResources().getColor(R.color.azure));
         pagerTabStrip.setTextSpacing(50);
 
         view1 = findViewById(R.layout.layout1);
@@ -68,34 +68,33 @@ public class MyActivity extends Activity {
         viewList.add(view3);
 
         titleList = new ArrayList<String>();// 每个页面的Title数据
-        titleList.add("一");
-        titleList.add("二");
+        titleList.add("ProgressBar");
+        titleList.add("ListView");
         titleList.add("三");
 
-        listView1 = (AnimationListView) view1.findViewById(R.id.listView1);
+        setupSmoothProgressBar();
+        setupAnimationListView();
+    }
+
+    private void setupSmoothProgressBar() {
+        smoothProgressBar = (SmoothProgressBar) view1.findViewById(R.id.smoothProgress);
+        progressStartButton = (Button) view1.findViewById(R.id.start);
+        progressStopButton = (Button) view1.findViewById(R.id.stop);
+
+        progressStartButton.setOnClickListener(this);
+        progressStopButton.setOnClickListener(this);
+    }
+
+    private void setupAnimationListView() {
+        listView1 = (AnimationListView) view2.findViewById(R.id.listView1);
         listView1.setAdapter(new ArrayAdapter<String>(this,
                 android.R.layout.simple_list_item_1, mStrings));
-        listView1.attachAnimators(new LeftInAnimation());
+        listView1.attachAnimators(new RightInAnimation());
 
-        listView2 = (AnimationListView) view2.findViewById(R.id.listView1);
+        listView2 = (AnimationListView) view3.findViewById(R.id.listView1);
         listView2.setAdapter(new ArrayAdapter<String>(this,
                 android.R.layout.simple_list_item_1, mStrings));
-        listView2.attachAnimators(new RightInAnimation());
-
-        listView3 = (AnimationListView) view3.findViewById(R.id.listView1);
-        listView3.setAdapter(new ArrayAdapter<String>(this,
-                android.R.layout.simple_list_item_1, mStrings));
-        listView3.attachAnimators(new ScaleInAnimation());
-
-        listView1.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                    downY = event.getY();
-                }
-                return false;
-            }
-        });
+        listView2.attachAnimators(new ScaleInAnimation());
 
         PagerAdapter pagerAdapter = new PagerAdapter() {
             @Override
@@ -131,7 +130,6 @@ public class MyActivity extends Activity {
             }
 
         };
-        viewPager.setAdapter(pagerAdapter);
 
         ViewPager.OnPageChangeListener pageChangeListener = new ViewPager.OnPageChangeListener() {
             @Override
@@ -151,6 +149,8 @@ public class MyActivity extends Activity {
 
             }
         };
+
+        viewPager.setAdapter(pagerAdapter);
         viewPager.setOnPageChangeListener(pageChangeListener);
     }
 
@@ -166,4 +166,13 @@ public class MyActivity extends Activity {
             "Baylough", "Beaufort", "Beauvoorde", "Beenleigh Blue", "Beer Cheese", "Bel Paese",
             "Bergader", "Bergere Bleue", "Berkswell", "Beyaz Peynir", "Bierkase", "Bishop Kennedy",
     };
+
+    @Override
+    public void onClick(View v) {
+        if (v.getId() == R.id.start) {
+            smoothProgressBar.progressiveStart();
+        } else if (v.getId() == R.id.stop) {
+            smoothProgressBar.progressiveStop();
+        }
+    }
 }
