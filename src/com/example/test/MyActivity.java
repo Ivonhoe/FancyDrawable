@@ -4,34 +4,27 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.PagerTabStrip;
-import android.support.v4.view.PagerTitleStrip;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
-import com.support.view.progressbar.SmoothProgressBar;
-import com.support.view.widget.core.AnimationListView;
-import com.support.view.widget.control.AnimationController;
-import com.support.view.widget.core.ViewPagerDecorator;
-import com.support.view.widget.sample.*;
+import com.support.widget.listview.core.AnimationListView;
+import com.support.widget.listview.control.AnimationController;
+import com.support.widget.listview.core.ViewPagerDecorator;
+import com.support.widget.listview.sample.*;
+import org.ivonhoe.supportlib.R;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MyActivity extends Activity implements View.OnClickListener {
+public class MyActivity extends Activity {
 
     private AnimationListView listView1;
     private AnimationListView listView2;
-    private SmoothProgressBar smoothProgressBar;
-    private Button progressStartButton;
-    private Button progressStopButton;
 
     private View view1, view2, view3;
     private ViewPagerDecorator viewPager;
-    private PagerTitleStrip pagerTitleStrip;
     private PagerTabStrip pagerTabStrip;
     private List<View> viewList;
     private List<String> titleList;
@@ -40,7 +33,8 @@ public class MyActivity extends Activity implements View.OnClickListener {
      * Called when the activity is first created.
      */
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
 
@@ -53,14 +47,14 @@ public class MyActivity extends Activity implements View.OnClickListener {
         pagerTabStrip.setDrawFullUnderline(false);
         pagerTabStrip.setTextSpacing(50);
 
-        view1 = findViewById(R.layout.layout1);
-        view2 = findViewById(R.layout.layout2);
-        view3 = findViewById(R.layout.layout3);
+        view1 = findViewById(R.layout.layout2);
+        view2 = findViewById(R.layout.layout3);
+        view3 = findViewById(R.layout.layout1);
 
         LayoutInflater lf = getLayoutInflater().from(this);
-        view1 = lf.inflate(R.layout.layout1, null);
-        view2 = lf.inflate(R.layout.layout2, null);
-        view3 = lf.inflate(R.layout.layout3, null);
+        view1 = lf.inflate(R.layout.layout2, null);
+        view2 = lf.inflate(R.layout.layout3, null);
+        view3 = lf.inflate(R.layout.layout1, null);
 
         viewList = new ArrayList<View>();// 将要分页显示的View装入数组中
         viewList.add(view1);
@@ -72,29 +66,19 @@ public class MyActivity extends Activity implements View.OnClickListener {
         titleList.add("ListView");
         titleList.add("三");
 
-        setupSmoothProgressBar();
         setupAnimationListView();
     }
 
-    private void setupSmoothProgressBar() {
-        smoothProgressBar = (SmoothProgressBar) view1.findViewById(R.id.smoothProgress);
-        progressStartButton = (Button) view1.findViewById(R.id.start);
-        progressStopButton = (Button) view1.findViewById(R.id.stop);
-
-        progressStartButton.setOnClickListener(this);
-        progressStopButton.setOnClickListener(this);
-    }
-
     private void setupAnimationListView() {
-        listView1 = (AnimationListView) view2.findViewById(R.id.listView1);
+        listView1 = (AnimationListView) view1.findViewById(R.id.listView1);
         listView1.setAdapter(new ArrayAdapter<String>(this,
                 android.R.layout.simple_list_item_1, mStrings));
-        listView1.attachAnimators(new RightInAnimation());
+        listView1.attachAnimators(new AlphaInAnimation());
 
-        listView2 = (AnimationListView) view3.findViewById(R.id.listView1);
+        listView2 = (AnimationListView) view2.findViewById(R.id.listView1);
         listView2.setAdapter(new ArrayAdapter<String>(this,
                 android.R.layout.simple_list_item_1, mStrings));
-        listView2.attachAnimators(new ScaleInAnimation());
+        listView2.attachAnimators(new AlphaInAnimation());
 
         PagerAdapter pagerAdapter = new PagerAdapter() {
             @Override
@@ -166,13 +150,4 @@ public class MyActivity extends Activity implements View.OnClickListener {
             "Baylough", "Beaufort", "Beauvoorde", "Beenleigh Blue", "Beer Cheese", "Bel Paese",
             "Bergader", "Bergere Bleue", "Berkswell", "Beyaz Peynir", "Bierkase", "Bishop Kennedy",
     };
-
-    @Override
-    public void onClick(View v) {
-        if (v.getId() == R.id.start) {
-            smoothProgressBar.progressiveStart();
-        } else if (v.getId() == R.id.stop) {
-            smoothProgressBar.progressiveStop();
-        }
-    }
 }

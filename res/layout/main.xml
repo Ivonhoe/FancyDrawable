@@ -4,7 +4,7 @@
               android:layout_width="fill_parent"
               android:layout_height="fill_parent">
 
-    <com.support.view.widget.core.ViewPagerDecorator
+    <com.support.widget.listview.core.ViewPagerDecorator
             android:id="@+id/viewpager"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -15,7 +15,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="top"/>
-    </com.support.view.widget.core.ViewPagerDecorator>
+    </com.support.widget.listview.core.ViewPagerDecorator>
 
 </LinearLayout>
 
