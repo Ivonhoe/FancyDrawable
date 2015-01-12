@@ -6,9 +6,9 @@ import com.support.drawable.AnimationDrawable;
 import com.support.drawable.ColorDrawable;
 
 /**
- * Created by Fan.Yang on 2014/12/29.
+ * Created by Ivonhoe on 2014/12/29.
  */
-public class ColorProgressBar extends SmoothProgressBar{
+public class ColorProgressBar extends SmoothProgressBar {
     public ColorProgressBar(Context context) {
         super(context);
     }

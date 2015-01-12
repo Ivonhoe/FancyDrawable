@@ -5,18 +5,13 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
-import com.support.animation.freepath.Point;
-import com.support.drawable.ColorDrawable;
-import com.support.drawable.PointDrawable;
-import com.support.drawable.StreakDrawable;
 import com.support.widget.progressbar.SmoothProgressBar;
 import org.ivonhoe.supportlib.R;
 
 import java.util.ArrayList;
 
 /**
- * Created by Fan.Yang on 2014/12/24.
+ * Created by ivonhoe on 2014/12/24.
  */
 public class ProgressBarLayout extends LinearLayout implements View.OnClickListener {
 

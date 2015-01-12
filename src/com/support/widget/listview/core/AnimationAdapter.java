@@ -4,6 +4,8 @@ import android.animation.Animator;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.SystemClock;
 import android.util.SparseArray;
 import android.view.View;
@@ -16,20 +18,9 @@ import android.widget.BaseAdapter;
 public class AnimationAdapter extends BaseAdapterDecorator {
 
     private static final boolean DEBUG = false;
-    private static final String TRANSLATION_X = "translationX";
-    private static final String TRANSLATION_Y = "translationY";
     private static final String ALPHA = "alpha";
-    private static final String SCALE_X = "scaleX";
-    private static final String SCALE_Y = "scaleY";
 
-    /**
-     * The fist visible position item end animation when pageViewer moving progress equals this factor.
-     */
-    float factor = 0.5f;
-
-    float fistItemSlope;
-
-    float itemsSlopeStep;
+    private Drawable itemBgDrawable = null;
 
     public AnimationAdapter(BaseAdapter baseAdapter) {
         super(baseAdapter);
@@ -46,8 +37,9 @@ public class AnimationAdapter extends BaseAdapterDecorator {
         if (DEBUG) {
             itemView.setBackgroundColor(Color.GRAY);
         }
-
-        //itemView.setBackgroundColor(Color.BLACK);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN && itemView.getBackground() == null) {
+            itemView.setBackground(itemBgDrawable);
+        }
         return itemView;
     }
 
@@ -77,6 +69,10 @@ public class AnimationAdapter extends BaseAdapterDecorator {
 
         mAnimators.put(view.hashCode(), set);
         lastAnimatedPosition = position;
+    }
+
+    public void setItemBgDrawable(Drawable itemBgDrawable) {
+        this.itemBgDrawable = itemBgDrawable;
     }
 
     /**
@@ -117,7 +113,7 @@ public class AnimationAdapter extends BaseAdapterDecorator {
      * Merges given Animators into one array.
      */
     public static Animator[] concatAnimators(final Animator[] animators,
-            final Animator alphaAnimator) {
+                                             final Animator alphaAnimator) {
         Animator[] allAnimators = new Animator[animators.length + 1];
         int i = 0;
 

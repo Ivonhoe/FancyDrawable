@@ -71,6 +71,7 @@ public class AnimationListView extends ListView implements PageScrollingListener
 
     private Drawable mDivider;
 
+    boolean isRebounding = false;
     private Runnable resetOverScrollRunnable = new Runnable() {
         @Override
         public void run() {
@@ -119,6 +120,7 @@ public class AnimationListView extends ListView implements PageScrollingListener
         mTempRect = new Rect();
         isOverScrolling = false;
         enableOverScroll = DEFAULT_OVERSCROLL_ENABLE;
+        allowOverScroll = DEFAULT_OVERSCROLL_ENABLE;
         enableItemAnimation = DEFAULT_ITEM_ANIMATION_ENABLE;
 
         locations = new Location[AnimationController.SAMPLE_SIZE];
@@ -198,7 +200,10 @@ public class AnimationListView extends ListView implements PageScrollingListener
     * */
     @Override
     public void onPageScrolling(float pageScrolling) {
-        /*float progress = pageScrolling > 0 ? pageScrolling : 1f + pageScrolling;
+        if (isOverScrolling) {
+            return;
+        }
+/*        float progress = pageScrolling > 0 ? pageScrolling : 1f + pageScrolling;
 
         int number = Math.max(arrow, visibleItemsCount - arrow);
         itemsSlopeStep = (1f - factor) / (number * factor);
@@ -218,6 +223,7 @@ public class AnimationListView extends ListView implements PageScrollingListener
         }
         arrow = progress == 0 || progress == 1 ? -1 : arrow;
         invalidate();*/
+
         onPageScrolling2(pageScrolling);
     }
 
@@ -225,6 +231,8 @@ public class AnimationListView extends ListView implements PageScrollingListener
         float progress = pageScrolling > 0 ? pageScrolling : 1f + pageScrolling;
 
         int number = Math.max(arrow, visibleItemsCount - arrow);
+        if (number <= 0)
+            return;
         float step = mFreePathInterpolator.length / number;
 
         float y1;
@@ -256,19 +264,22 @@ public class AnimationListView extends ListView implements PageScrollingListener
             {0.37f, 0.44f, 0.49f, 0.61f},
     };
 
+    /*
+    * 设置两个“雨刷”，控制起始和终点的角度，来生成控制点，通过不同角度的控制点生成贝塞尔曲线插值器
+    * */
     static double PI = Math.PI / 180;
-    static float start = 87;
-    static float end = 50;
+    static float startDegree = 87;
+    static float endDegree = 20;
     static float R1 = 0.7f;
     static float R2 = 0.7f;
     private void setupScrollInterpolator() {
         float x1,y1,x2,y2;
-        float step = (start - end) / mFreePathInterpolator.length;
+        float step = (startDegree - endDegree) / mFreePathInterpolator.length;
         for (int i = 0; i < mFreePathInterpolator.length; i++) {
-            x1 = (float) Math.cos(PI * (start - step * i)) * R1;
-            y1 = (float) Math.sin(PI * (start - step * i)) * R1;
-            x2 = 1f - ((float) Math.sin(PI * (start - step * i))) * R2;
-            y2 = 1f - ((float) Math.cos(PI * (start - step * i))) * R2;
+            x1 = (float) Math.cos(PI * (startDegree - step * i)) * R1;
+            y1 = (float) Math.sin(PI * (startDegree - step * i)) * R1;
+            x2 = 1f - ((float) Math.sin(PI * (startDegree - step * i))) * R2;
+            y2 = 1f - ((float) Math.cos(PI * (startDegree - step * i))) * R2;
             mFreePathInterpolator[i] = new FreePathInterpolator(x1, y1, x2, y2,
                     FreePathInterpolator.BEZIER, FreePathInterpolator.DISPLACEMENT);
         }
@@ -323,9 +334,9 @@ public class AnimationListView extends ListView implements PageScrollingListener
     protected boolean overScrollBy(int deltaX, int deltaY, int scrollX, int scrollY,
                                    int scrollRangeX, int scrollRangeY, int maxOverScrollX, int maxOverScrollY,
                                    boolean isTouchEvent) {
-        if (!enableOverScroll || !allowOverScroll) {
+        if (!enableOverScroll || !allowOverScroll || isRebounding) {
             return super.overScrollBy(deltaX, deltaY, scrollX, scrollY, scrollRangeX, scrollRangeY,
-                    maxOverScrollX, maxOverScrollY, isTouchEvent);
+                    maxOverScrollX, 0, isTouchEvent);
         }
 
         getHandler().removeCallbacks(resetOverScrollRunnable);
@@ -350,6 +361,7 @@ public class AnimationListView extends ListView implements PageScrollingListener
                 View viewItem = getChildAt(i - 1);
                 if (viewItem != null) {
                     delta = delta + 2 * space * (arrow + 1 - i) / ((arrow + 1) * (arrow + 2));
+                    //delta = maxYOverScrollDistance / arrow * (arrow - i);
                     viewItem.setTranslationY(-delta);
                 }
             }
@@ -359,8 +371,9 @@ public class AnimationListView extends ListView implements PageScrollingListener
             for (int i = 1; i < count && t >= 0; i++) {
                 View viewItem = getChildAt(i + arrow);
                 if (viewItem != null) {
-                    // delta = delta + 2 * space * (count - i) / (count * (count - 1));
-                    delta = delta + 2 * space * i / ((count ) * (count - 1));
+                    //delta = delta + 2 * space * (count - i) / (count * (count - 1));
+                    //delta = delta + 2 * space * i / ((count) * (count - 1));
+                    delta = delta + 2 * space * i / ((count) * (count + 1));
                     viewItem.setTranslationY(delta);
                 }
             }
@@ -398,9 +411,6 @@ public class AnimationListView extends ListView implements PageScrollingListener
             }
         }
     }
-
-    Camera mCamera = new Camera();
-    Matrix mMatrix = new Matrix();
 
     @Override
     public void setDivider(Drawable divider) {
@@ -457,11 +467,13 @@ public class AnimationListView extends ListView implements PageScrollingListener
 
         @Override
         public void onAnimationStart(Animation animation) {
+            isRebounding = true;
         }
 
         @Override
         public void onAnimationEnd(Animation animation) {
             isOverScrolling = false;
+            isRebounding = false;
         }
 
         @Override

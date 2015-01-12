@@ -48,11 +48,16 @@ public class AnimationController {
 
     public void onPageScrolling(float scrollProgress, float positionOffsetPixels) {
         float progress = scrollProgress;
+        if ((lastMovingProgress > 0.9 && progress < 0.1) || (lastMovingProgress < 0.1 && progress > 0.9)) {
+            onPageScrollEnd();
+        }
+
         // make sure the first offset in the cache is the beginning location of the listener
-        if (lastMovingProgress > 0.99 && progress == 0) {
+        if (lastMovingProgress > 0.99 && progress == 0 && checkTimes > 0) {
             progress = 1f;
         } else if (scrollProgress == 0) {
             checkTimes = 0;
+            mListener = null;
         }
 
         progress = progress * scrollToRight;
@@ -71,7 +76,11 @@ public class AnimationController {
         } else {
             offsetPixels[checkTimes] = positionOffsetPixels;
             offset[checkTimes] = scrollProgress;
-            getCurrentListener(progress);
+            PageScrollingListener listener = getCurrentListener(progress);
+            if (listener != null) {
+                mListener = listener;
+                mListener.onPageScrolling(progress);
+            }
             checkTimes++;
         }
         lastMovingProgress = progress;
@@ -87,7 +96,6 @@ public class AnimationController {
                 continue;
             }
             boolean result = checkLocation(locations);
-
             float distance = Math.abs(offsetPixels[0] - locations[0].x);
             if (result && distance < minDistance) {
                 index = i;
@@ -114,7 +122,7 @@ public class AnimationController {
         // 1. check direction use offsetPixels sample
         // scrollToRight = delta > 0 ? 1 : -1;
         // 2. check direction use offsetProgress
-        scrollToRight = offset[0] > 0.9 ? -1 : 1;
+        scrollToRight = offset[0] > 0.5 ? -1 : 1;
         int displayWidth = displayMetrics.widthPixels;
         if (scrollToRight > 0 && locations[0].x >= displayWidth &&
                 locations[0].x < 2 * displayWidth) {
@@ -129,6 +137,7 @@ public class AnimationController {
     public void onPageScrollEnd() {
         mListener = null;
         checkTimes = 0;
+        scrollToRight = 1;
         for (int i = 0; i < registeredView.size(); i++) {
             PageScrollingListener listener = registeredView.valueAt(i);
             listener.onEndPageScroll();

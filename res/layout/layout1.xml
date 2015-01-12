@@ -18,7 +18,7 @@
             android:indeterminate="true"
             android:indeterminateOnly="false"/>
 
-    <com.support.widget.progressbar.PointProgressBar
+    <com.support.widget.progressbar.AtomProgressBar
             android:id="@+id/smoothProgress3"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
