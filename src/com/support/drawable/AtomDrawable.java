@@ -1,5 +1,7 @@
 package com.support.drawable;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.graphics.Canvas;
 import android.graphics.Rect;
@@ -9,6 +11,7 @@ import com.support.drawable.style.Atom;
 import com.support.drawable.style.AtomFactory;
 import com.support.drawable.style.AtomStyle;
 import com.support.drawable.style.HorizontalAtomFactory;
+import com.support.widget.listview.utils.L;
 
 /**
  * Created by ivonhoe on 2014/12/24.
@@ -28,12 +31,11 @@ public class AtomDrawable extends AnimationDrawable {
 
         AtomStyle style = new AtomStyle();
         style.setInterpolator(bezierInterpolator);
-        AtomFactory factory = new HorizontalAtomFactory();
-        initialize(style, factory);
+        initialize(style, style.getAtomFactory());
     }
 
-    public AtomDrawable(AtomStyle style, AtomFactory factory) {
-        initialize(style, factory);
+    public AtomDrawable(AtomStyle style) {
+        initialize(style, style.getAtomFactory());
     }
 
     private void initialize(AtomStyle style, AtomFactory factory) {
@@ -49,15 +51,14 @@ public class AtomDrawable extends AnimationDrawable {
 
     @Override
     public void onStart() {
-        if (mAnimatorSet != null) {
-            mAnimatorSet.start();
+        if (mBounds != null) {
+            setupAnimators(mBounds);
         }
     }
 
     private void setupAnimators(final Rect bound) {
         if (mAnimatorSet == null && mAtomStyle != null && mAtomFactory != null) {
             mAtomStyle.setParentBound(bound);
-            mAnimatorSet = new AnimatorSet();
             mAnimatorSet = mAtomFactory.getAtomsAnimation(mAtomStyle, mAtoms);
             mAnimatorSet.start();
         }
@@ -65,7 +66,7 @@ public class AtomDrawable extends AnimationDrawable {
 
     @Override
     public void onDraw(Canvas canvas) {
-        setupAnimators(mBounds);
+        //setupAnimators(mBounds);
 
         for (int i = 0; i < mAtomStyle.getSectionCount(); i++) {
             if (mAtoms[i].getLocationX() > 0 && (int) mAtoms[i].getLocationX() < mBounds.width()) {

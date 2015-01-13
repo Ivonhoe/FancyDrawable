@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.example.test.ProgressBarLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:orientation="vertical">
+<com.example.test.ProgressBarLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:atomStyle="http://schemas.android.com/apk/res/org.ivonhoe.supportlib"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
     <com.support.widget.progressbar.ColorProgressBar
             android:id="@+id/smoothProgress1"
@@ -23,14 +25,21 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:indeterminate="true"
-            android:indeterminateOnly="false"/>
+            android:indeterminateOnly="false"
+            atomStyle:factory="horizontal"
+            atomStyle:textSize="@dimen/size_middle"
+            atomStyle:text="@string/loading"
+            atomStyle:interpolator="@anim/dec_acce_freepath"/>
 
-<!--    <com.support.widget.progressbar.SmoothProgressBar
+    <com.support.widget.progressbar.AtomProgressBar
             android:id="@+id/smoothProgress4"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:indeterminate="true"
-            android:indeterminateOnly="false"/>-->
+            android:indeterminateOnly="false"
+            android:textColor="@android:color/holo_red_dark"
+            atomStyle:factory="circle"
+            atomStyle:interpolator="@anim/acce_dec_freepath"/>
 
     <LinearLayout
             android:layout_width="fill_parent"

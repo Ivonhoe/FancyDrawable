@@ -13,6 +13,7 @@ import com.support.widget.listview.core.AnimationListView;
 import com.support.widget.listview.control.AnimationController;
 import com.support.widget.listview.core.ViewPagerDecorator;
 import com.support.widget.listview.sample.*;
+import com.support.widget.listview.utils.L;
 import org.ivonhoe.supportlib.R;
 
 import java.util.ArrayList;
@@ -23,7 +24,7 @@ public class MyActivity extends Activity {
     private AnimationListView listView1;
     private AnimationListView listView2;
 
-    private View view1, view2, view3;
+    private View view1, listLayout1, listLayout2;
     private ViewPagerDecorator viewPager;
     private PagerTabStrip pagerTabStrip;
     private List<View> viewList;
@@ -33,8 +34,7 @@ public class MyActivity extends Activity {
      * Called when the activity is first created.
      */
     @Override
-    public void onCreate(Bundle savedInstanceState)
-    {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
 
@@ -47,35 +47,31 @@ public class MyActivity extends Activity {
         pagerTabStrip.setDrawFullUnderline(false);
         pagerTabStrip.setTextSpacing(50);
 
-        view1 = findViewById(R.layout.layout2);
-        view2 = findViewById(R.layout.layout3);
-        view3 = findViewById(R.layout.layout1);
-
         LayoutInflater lf = getLayoutInflater().from(this);
-        view1 = lf.inflate(R.layout.layout2, null);
-        view2 = lf.inflate(R.layout.layout3, null);
-        view3 = lf.inflate(R.layout.layout1, null);
+        view1 = lf.inflate(R.layout.layout1, null);
+        listLayout1 = lf.inflate(R.layout.layout2, null);
+        listLayout2 = lf.inflate(R.layout.layout3, null);
 
         viewList = new ArrayList<View>();// 将要分页显示的View装入数组中
         viewList.add(view1);
-        viewList.add(view2);
-        viewList.add(view3);
+        viewList.add(listLayout1);
+        viewList.add(listLayout2);
 
         titleList = new ArrayList<String>();// 每个页面的Title数据
         titleList.add("ProgressBar");
         titleList.add("ListView");
-        titleList.add("三");
+        titleList.add("ListView");
 
         setupAnimationListView();
     }
 
     private void setupAnimationListView() {
-        listView1 = (AnimationListView) view1.findViewById(R.id.listView1);
+        listView1 = (AnimationListView) listLayout1.findViewById(R.id.listView1);
         listView1.setAdapter(new ArrayAdapter<String>(this,
                 android.R.layout.simple_list_item_1, mStrings));
         listView1.attachAnimators(new AlphaInAnimation());
 
-        listView2 = (AnimationListView) view2.findViewById(R.id.listView1);
+        listView2 = (AnimationListView) listLayout2.findViewById(R.id.listView1);
         listView2.setAdapter(new ArrayAdapter<String>(this,
                 android.R.layout.simple_list_item_1, mStrings));
         listView2.attachAnimators(new AlphaInAnimation());

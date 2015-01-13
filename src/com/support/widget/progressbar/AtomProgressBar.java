@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.AttributeSet;
 import android.view.animation.Interpolator;
+import android.view.animation.LinearInterpolator;
 import com.support.animation.FreePathInterpolator;
 import com.support.drawable.AnimationDrawable;
 import com.support.drawable.AtomDrawable;
@@ -13,7 +14,7 @@ import com.support.drawable.style.AtomStyle;
 import com.support.drawable.style.CircleAtomFactory;
 
 /**
- * Created by Ivonhoe on 2014/12/29.
+ * Created by ivonhoe on 2014/12/29.
  */
 public class AtomProgressBar extends SmoothProgressBar {
 
@@ -30,21 +31,10 @@ public class AtomProgressBar extends SmoothProgressBar {
     }
 
     @Override
-    protected void setupAnimationDrawable() {
-        AtomStyle style = new AtomStyle();
-        Interpolator bezierInterpolator = new FreePathInterpolator(0.1f, 0.68f, 0.23f, 0.86f,
-                FreePathInterpolator.BEZIER, FreePathInterpolator.DISPLACEMENT);
-        style.setInterpolator(bezierInterpolator);
-        AtomFactory factory = new CircleAtomFactory();
-        AnimationDrawable d = new AtomDrawable(style, factory);
+    protected AnimationDrawable setupAnimationDrawable(Context context, AttributeSet attrs) {
+        AtomStyle style = new AtomStyle(context, attrs);
+        AnimationDrawable d = new AtomDrawable(style);
 
-        Paint paint = new Paint();
-        paint.setTextSize(25);
-        paint.setStrokeWidth(1);
-        paint.setDither(false);
-        paint.setAntiAlias(false);
-        paint.setColor(Color.BLUE);
-
-        setAnimationDrawable(d);
+        return d;
     }
 }

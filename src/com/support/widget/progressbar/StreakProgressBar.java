@@ -22,8 +22,9 @@ public class StreakProgressBar extends SmoothProgressBar {
     }
 
     @Override
-    protected void setupAnimationDrawable() {
+    protected AnimationDrawable setupAnimationDrawable(Context context, AttributeSet attrs) {
+
         AnimationDrawable d = new StreakDrawable();
-        setAnimationDrawable(d);
+        return d;
     }
 }

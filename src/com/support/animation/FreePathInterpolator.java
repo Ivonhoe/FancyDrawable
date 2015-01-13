@@ -3,10 +3,10 @@ package com.support.animation;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
-import android.util.Log;
-import android.R;
 import android.view.animation.Interpolator;
 import com.support.animation.freepath.*;
+import com.support.widget.listview.utils.L;
+import org.ivonhoe.supportlib.R;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -43,7 +43,7 @@ public class FreePathInterpolator implements Interpolator {
         mFreePathSamplers = samplers;
     }
 
-/*    public FreePathInterpolator(Context context, XmlPullParser parser, AttributeSet attrs)
+    public FreePathInterpolator(Context context, XmlPullParser parser, AttributeSet attrs)
             throws IOException, XmlPullParserException {
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.FreePathInterpolator);
         pathType = a.getInt((R.styleable.FreePathInterpolator_pathType), CATMULL_ROM);
@@ -75,11 +75,12 @@ public class FreePathInterpolator implements Interpolator {
         }
 
         mFreePathSamplers = createFreePathSampler(pathType, usage, controlPoints);
-    }*/
+    }
 
     private static FreePathSamplers createFreePathSampler(int pathType, int samplerType, List<Point> points) {
         FreePath freePath;
         switch (pathType) {
+
             case BEZIER:
                 freePath = new BezierPath();
                 break;

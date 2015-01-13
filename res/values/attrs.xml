@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="FreePathInterpolator">
+        <attr name="pathType">
+            <enum name="bezier" value="0"/>
+            <enum name="catmullRom" value="1"/>
+        </attr>
+        <attr name="pathUsage">
+            <enum name="displacement" value="0"/>
+            <enum name="velocity" value="1"/>
+        </attr>
+    </declare-styleable>
+
+    <declare-styleable name="Anchor">
+        <attr name="xCoord" format="float"></attr>
+        <attr name="yCoord" format="float"></attr>
+    </declare-styleable>
+
+    <declare-styleable name="Atom">
+        <attr name="shape">
+            <enum name="point" value="0"/>
+            <enum name="character" value="1"/>
+            <enum name="circle" value="2"/>
+        </attr>
+        <attr name="delay" format="integer"></attr>
+        <attr name="duration" format="integer"></attr>
+        <attr name="count" format="integer"></attr>
+        <attr name="interpolator" format="reference|string"></attr>
+        <attr name="android:textColor"></attr>
+        <attr name="strokeWidth" format="integer|reference"></attr>
+        <attr name="textSize" format="dimension|reference"></attr>
+        <attr name="text" format="string|reference"></attr>
+        <attr name="factory">
+            <enum name="horizontal" value="0"></enum>
+            <enum name="circle" value="1"></enum>
+        </attr>
+    </declare-styleable>
+</resources>

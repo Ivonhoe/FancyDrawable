@@ -20,11 +20,15 @@ public abstract class SmoothProgressBar extends ProgressBar {
     public SmoothProgressBar(Context context, AttributeSet attrs) {
         super(context, attrs);
 
-        setupAnimationDrawable();
+        AnimationDrawable d = setupAnimationDrawable(context, attrs);
+        setAnimationDrawable(d);
     }
 
     public SmoothProgressBar(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+
+        AnimationDrawable d = setupAnimationDrawable(context, attrs);
+        setAnimationDrawable(d);
     }
 
     @Override
@@ -36,7 +40,7 @@ public abstract class SmoothProgressBar extends ProgressBar {
         }
     }
 
-    public void setAnimationDrawable(AnimationDrawable animationDrawable){
+    public void setAnimationDrawable(AnimationDrawable animationDrawable) {
         setIndeterminateDrawable(animationDrawable);
     }
 
@@ -56,5 +60,5 @@ public abstract class SmoothProgressBar extends ProgressBar {
         checkIndeterminateDrawable().stop();
     }
 
-    protected abstract void setupAnimationDrawable();
+    protected abstract AnimationDrawable setupAnimationDrawable(Context context, AttributeSet attrs);
 }

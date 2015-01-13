@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<freePathInterpolator
+        xmlns:freepath="http://schemas.android.com/apk/res/org.ivonhoe.supportlib"
+        freepath:pathType="bezier"
+        freepath:pathUsage="displacement">
+
+    <anchor
+            freepath:xCoord="0"
+            freepath:yCoord="0"/>
+    <anchor
+            freepath:xCoord="0.03"
+            freepath:yCoord="0.615"/>
+    <anchor
+            freepath:xCoord="0.995"
+            freepath:yCoord="0.415"/>
+    <anchor
+            freepath:xCoord="1"
+            freepath:yCoord="1"/>
+
+</freePathInterpolator>

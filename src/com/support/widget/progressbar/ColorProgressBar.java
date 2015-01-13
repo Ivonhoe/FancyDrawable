@@ -22,8 +22,9 @@ public class ColorProgressBar extends SmoothProgressBar {
     }
 
     @Override
-    protected void setupAnimationDrawable() {
+    protected AnimationDrawable setupAnimationDrawable(Context context, AttributeSet attrs) {
         AnimationDrawable d = new ColorDrawable();
-        setAnimationDrawable(d);
+
+        return d;
     }
 }
