@@ -40,6 +40,8 @@ public class AtomStyle {
 
     String text;
 
+    int radius;
+
     AtomFactory atomFactory;
 
     public AtomStyle(Context context, AttributeSet attrs) {
@@ -65,6 +67,7 @@ public class AtomStyle {
                 break;
             case 2:
                 shape = Shape.CIRCLE;
+                radius = a.getInt(R.styleable.Atom_radius, 2);
                 break;
         }
 
@@ -177,5 +180,13 @@ public class AtomStyle {
 
     public void setAtomFactory(AtomFactory atomFactory) {
         this.atomFactory = atomFactory;
+    }
+
+    public int getRadius() {
+        return radius;
+    }
+
+    public void setRadius(int radius) {
+        this.radius = radius;
     }
 }

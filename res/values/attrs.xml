@@ -22,6 +22,7 @@
             <enum name="character" value="1"/>
             <enum name="circle" value="2"/>
         </attr>
+        <attr name="radius" format="integer"></attr>
         <attr name="delay" format="integer"></attr>
         <attr name="duration" format="integer"></attr>
         <attr name="count" format="integer"></attr>

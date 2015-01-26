@@ -16,6 +16,8 @@ public abstract class AtomFactory {
 
     public abstract ObjectAnimator getAtomAnimator(final Atom atom, final Rect bound);
 
+    public abstract boolean isAtomRunning(Atom atom);
+
     public AnimatorSet getAtomsAnimation(AtomStyle atomStyle, Atom[] atoms) {
         AnimatorSet animatorSet = new AnimatorSet();
         int count = atomStyle.getSectionCount();
@@ -42,10 +44,20 @@ public abstract class AtomFactory {
         animatorSet.playTogether(animators);
         animatorSet.setInterpolator(atomStyle.getInterpolator());
         animatorSet.setStartDelay(atomStyle.getDelay());
+        animatorSet.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                super.onAnimationEnd(animation);
+                animation.start();
+            }
+        });
         return animatorSet;
     }
 
     public void drawAtom(Canvas canvas, AtomStyle style, Atom atom) {
+        if (!isAtomRunning(atom)) {
+            return;
+        }
         Paint paint = style.getPaint();
         AtomStyle.Shape shape = style.getShape();
 
@@ -56,6 +68,10 @@ public abstract class AtomFactory {
 
             case POINT:
                 canvas.drawPoint(atom.getLocationX(), atom.getLocationY(), paint);
+                break;
+
+            case CIRCLE:
+                canvas.drawCircle(atom.getLocationX(), atom.getLocationY(), 5, paint);
                 break;
         }
     }

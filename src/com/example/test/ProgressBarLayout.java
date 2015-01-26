@@ -44,11 +44,13 @@ public class ProgressBarLayout extends LinearLayout implements View.OnClickListe
         SmoothProgressBar smoothProgressBar2 = (SmoothProgressBar) findViewById(R.id.smoothProgress2);
         SmoothProgressBar smoothProgressBar3 = (SmoothProgressBar) findViewById(R.id.smoothProgress3);
         SmoothProgressBar smoothProgressBar4 = (SmoothProgressBar) findViewById(R.id.smoothProgress4);
+        SmoothProgressBar smoothProgressBar5 = (SmoothProgressBar) findViewById(R.id.smoothProgress5);
 
         smoothProgressBars.add(smoothProgressBar1);
         smoothProgressBars.add(smoothProgressBar2);
         smoothProgressBars.add(smoothProgressBar3);
         smoothProgressBars.add(smoothProgressBar4);
+        smoothProgressBars.add(smoothProgressBar5);
 
         progressStartButton = (Button) findViewById(R.id.start);
         progressStopButton = (Button) findViewById(R.id.stop);

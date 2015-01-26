@@ -37,8 +37,20 @@
             android:layout_height="wrap_content"
             android:indeterminate="true"
             android:indeterminateOnly="false"
+            atomStyle:shape="point"
+            atomStyle:factory="horizontal"
+            atomStyle:interpolator="@anim/dec_acce_freepath"/>
+
+    <com.support.widget.progressbar.AtomProgressBar
+            android:id="@+id/smoothProgress5"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:indeterminate="true"
+            android:indeterminateOnly="false"
             android:textColor="@android:color/holo_red_dark"
             atomStyle:factory="circle"
+            atomStyle:shape="circle"
+            atomStyle:radius="6"
             atomStyle:interpolator="@anim/acce_dec_freepath"/>
 
     <LinearLayout

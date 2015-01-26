@@ -69,21 +69,22 @@ public class AtomDrawable extends AnimationDrawable {
         //setupAnimators(mBounds);
 
         for (int i = 0; i < mAtomStyle.getSectionCount(); i++) {
-            if (mAtoms[i].getLocationX() > 0 && (int) mAtoms[i].getLocationX() < mBounds.width()) {
-                mAtomFactory.drawAtom(canvas, mAtomStyle, mAtoms[i]);
+            mAtomFactory.drawAtom(canvas, mAtomStyle, mAtoms[i]);
+/*            if (mAtoms[i].getLocationX() > 0 && (int) mAtoms[i].getLocationX() < mBounds.width()) {
+
             } else if ((int) mAtoms[i].getLocationX() == mBounds.width()) {
                 mAtoms[i].setLocationX(-1f);
                 reachEnd++;
-            }
+            }*/
         }
     }
 
     @Override
     public void onUpdate() {
-        if (mAnimatorSet != null && !mAnimatorSet.isRunning() &&
-                reachEnd > mAtomStyle.getSectionCount() - 1) {
+        if (mAnimatorSet != null && !mAnimatorSet.isRunning()/* &&
+                reachEnd > mAtomStyle.getSectionCount() - 1*/) {
             reachEnd = 0;
-            mAnimatorSet.start();
+            //mAnimatorSet.start();
         }
     }
 }

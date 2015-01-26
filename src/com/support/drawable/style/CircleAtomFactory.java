@@ -21,12 +21,19 @@ public class CircleAtomFactory extends AtomFactory {
         animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
-                float x = (float) (bound.centerX() + (bound.height() / 2) * Math.sin(PI * atom.getDelta()));
-                float y = (float) (bound.centerY() - (bound.height() / 2) * Math.cos(PI * atom.getDelta()));
+                float x = (float) (bound.centerX() +
+                        (bound.height() / 2) * Math.sin(PI * atom.getDelta()));
+                float y = (float) (bound.centerY() -
+                        (bound.height() / 2) * Math.cos(PI * atom.getDelta()));
                 atom.setLocationX(x);
                 atom.setLocationY(y);
             }
         });
         return animator;
+    }
+
+    @Override
+    public boolean isAtomRunning(Atom atom) {
+        return atom.getDelta() > startDegree && atom.getDelta() < endDegree;
     }
 }
