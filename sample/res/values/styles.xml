@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="AppTheme" parent="@android:style/Theme.Light">
+
+    </style>
+
+    <style name="ItemStyle">
+        <item name="android:layout_width">@dimen/itemSize</item>
+        <item name="android:layout_height">@dimen/itemSize</item>
+        <item name="android:layout_marginLeft">2dip</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:src">@drawable/ic_launcher</item>
+    </style>
+</resources>
