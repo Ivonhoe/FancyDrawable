@@ -8,7 +8,7 @@ import android.graphics.Rect;
  */
 public class BallsCircleDrawable extends AtomDrawable{
     @Override
-    public ObjectAnimator getAtomAnimator(Atom atom, Rect bound) {
+    public ObjectAnimator[] getAtomAnimator(Atom atom, Rect bound) {
         return null;
     }
 

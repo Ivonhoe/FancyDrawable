@@ -6,6 +6,8 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
 import android.widget.ImageView;
 import com.ivonhoe.drawable.*;
 
@@ -18,6 +20,9 @@ public class MyActivity extends Activity {
     private ImageView mBallsLineImage;
     private ImageView mTextLineImage;
     private ImageView mBallsCircleImage;
+    private ImageView mYouZanImage;
+    private ImageView mWangYiImage;
+    private ImageView mTaoBaoImage;
 
     /**
      * Called when the activity is first created.
@@ -83,6 +88,42 @@ public class MyActivity extends Activity {
         ((AtomDrawable) textDrawable).setPaint(paint);
         mTextLineImage = (ImageView) findViewById(R.id.textLineImage);
         mTextLineImage.setImageDrawable(textDrawable);
+
+        /**
+         *
+         * */
+        Drawable cycleDrawable = new BallsCircleDrawable();
+
+        /**
+         * 有赞客户端加载进度条
+         * */
+        Drawable youZanDrawable = new YouZanDrawable();
+        mYouZanImage = (ImageView) findViewById(R.id.youZanImage);
+        mYouZanImage.setImageDrawable(youZanDrawable);
+
+        mYouZanImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                stopDrawableAnimation(mYouZanImage.getDrawable());
+                startDrawableAnimation(mYouZanImage.getDrawable());
+                stopDrawableAnimation(mWangYiImage.getDrawable());
+                startDrawableAnimation(mWangYiImage.getDrawable());
+            }
+        });
+
+        /**
+         * 网易邮箱客户端加载进度条
+         * */
+        Drawable wangYiDrawable = new NetEaseDrawable(this);
+        mWangYiImage = (ImageView) findViewById(R.id.wangYiImage);
+        mWangYiImage.setImageDrawable(wangYiDrawable);
+
+        /**
+         * 手机淘宝客户端加载进度条
+         * */
+        Drawable taoBaoImage = new TaoBaoDrawable(this);
+        mTaoBaoImage = (ImageView) findViewById(R.id.taoBaoImage);
+        mTaoBaoImage.setImageDrawable(taoBaoImage);
     }
 
     @Override
@@ -93,6 +134,9 @@ public class MyActivity extends Activity {
         startDrawableAnimation(mStreakImage.getDrawable());
         startDrawableAnimation(mBallsLineImage.getDrawable());
         startDrawableAnimation(mTextLineImage.getDrawable());
+        startDrawableAnimation(mYouZanImage.getDrawable());
+        startDrawableAnimation(mWangYiImage.getDrawable());
+        startDrawableAnimation(mTaoBaoImage.getDrawable());
     }
 
     @Override
@@ -103,6 +147,9 @@ public class MyActivity extends Activity {
         stopDrawableAnimation(mStreakImage.getDrawable());
         stopDrawableAnimation(mBallsLineImage.getDrawable());
         stopDrawableAnimation(mTextLineImage.getDrawable());
+        stopDrawableAnimation(mYouZanImage.getDrawable());
+        stopDrawableAnimation(mWangYiImage.getDrawable());
+        stopDrawableAnimation(mTaoBaoImage.getDrawable());
     }
 
     private void startDrawableAnimation(Drawable drawable) {

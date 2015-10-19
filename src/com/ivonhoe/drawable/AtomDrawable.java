@@ -8,28 +8,30 @@ import android.annotation.TargetApi;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.os.Handler;
+import android.os.Message;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.animation.Interpolator;
 import com.ivonhoe.interpolator.BezierInterpolator;
 
+import java.util.ArrayList;
+
 /**
- * Created by ivonhoe on 2014/12/24.
+ * @author Ivonhoe on 2014/12/24.
  */
 public abstract class AtomDrawable extends FancyDrawable {
 
-    private Interpolator DEFAULT_INTERPOLATOR = new BezierInterpolator(0.03f, 0.615f, 0.995f,
+    protected Interpolator DEFAULT_INTERPOLATOR = new BezierInterpolator(0.03f, 0.615f, 0.995f,
             0.415f);
-    private AnimatorSet mAtomsAnimatorSet;
-    private Atom[] mAtoms;
-    private AtomStyle mAtomStyle;
+    protected AnimatorSet mAtomsAnimatorSet;
+    protected Atom[] mAtoms;
+    protected AtomStyle mAtomStyle;
+    protected float mDensity;
 
     public AtomDrawable() {
-        Interpolator bezierInterpolator = DEFAULT_INTERPOLATOR;
-
         AtomStyle style = new AtomStyle();
-        style.setInterpolator(bezierInterpolator);
         initialize(style);
     }
 
@@ -37,12 +39,12 @@ public abstract class AtomDrawable extends FancyDrawable {
         initialize(style);
     }
 
-    private void initialize(AtomStyle style) {
+    protected void initialize(AtomStyle style) {
         mAtomStyle = style;
         int atomCount = mAtomStyle.getSectionCount();
         mAtoms = new Atom[atomCount];
         for (int i = 0; i < atomCount; i++) {
-            mAtoms[i] = new Atom();
+            mAtoms[i] = new Atom(i);
         }
         mAtomsAnimatorSet = null;
     }
@@ -104,7 +106,7 @@ public abstract class AtomDrawable extends FancyDrawable {
         if (text != null && text.length() != mAtoms.length) {
             mAtoms = new Atom[text.length()];
             for (int i = 0; i < mAtoms.length; i++) {
-                mAtoms[i] = new Atom();
+                mAtoms[i] = new Atom(i);
             }
         }
         recreateAnimator();
@@ -125,12 +127,22 @@ public abstract class AtomDrawable extends FancyDrawable {
     /**
      * 一个元素如何动画
      */
-    public abstract ObjectAnimator getAtomAnimator(final Atom atom, final Rect bound);
+    public abstract ObjectAnimator[] getAtomAnimator(final Atom atom, final Rect bound);
 
     /**
      * 一个元素是否在动画中
      */
     public abstract boolean isAtomRunning(Atom atom);
+
+    @Override
+    public int getIntrinsicWidth() {
+        return super.getIntrinsicWidth();
+    }
+
+    @Override
+    public int getIntrinsicHeight() {
+        return super.getIntrinsicHeight();
+    }
 
     /**
      * 根据元素样式得到动画集合
@@ -138,7 +150,7 @@ public abstract class AtomDrawable extends FancyDrawable {
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     public AnimatorSet getAtomsAnimation(AtomStyle atomStyle, Atom[] atoms) {
         int count = atomStyle.getSectionCount();
-        Animator[] animators = new Animator[count];
+        ArrayList<Animator> temp = new ArrayList<Animator>();
         String text = atomStyle.getText();
         final Rect bound = atomStyle.getParentBound();
         if (bound == null || mAtomsAnimatorSet != null) {
@@ -151,27 +163,44 @@ public abstract class AtomDrawable extends FancyDrawable {
             if (!TextUtils.isEmpty(text)) {
                 atom.setText(text.substring(text.length() - i - 1, text.length() - i));
             }
-            ObjectAnimator animator = getAtomAnimator(atoms[i], bound);
-
-            if (animator != null) {
-                animator.setStartDelay(atomStyle.getDelay() * (i));
-                animators[i] = animator;
+            ObjectAnimator[] animators = getAtomAnimator(atoms[i], bound);
+            for (Animator animator : animators) {
+                if (animator != null) {
+                    animator.setStartDelay(atomStyle.getDelay() * i);
+                    temp.add(animator);
+                }
             }
         }
 
+        //Log.d("simply", "--temp:" + temp.size() + ",mAtomsAnimatorSet:" + mAtomsAnimatorSet);
         mAtomsAnimatorSet.setDuration(atomStyle.getDuration());
-        mAtomsAnimatorSet.playTogether(animators);
-        mAtomsAnimatorSet.setInterpolator(atomStyle.getInterpolator());
+        mAtomsAnimatorSet.playTogether(temp);
+        if (atomStyle.getInterpolator() != null) {
+            mAtomsAnimatorSet.setInterpolator(atomStyle.getInterpolator());
+        }
         mAtomsAnimatorSet.setStartDelay(atomStyle.getDelay());
         mAtomsAnimatorSet.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
-                super.onAnimationEnd(animation);
-                animation.start();
+                if (mAtomsAnimatorSet.getDuration() > 0) {
+                    mHandler.sendEmptyMessage(0);
+                }
+                //Log.d("simply", "+++animation :" + animation);
             }
         });
         return mAtomsAnimatorSet;
     }
+
+    protected Handler mHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            removeMessages(0);
+            if (mAtomsAnimatorSet != null) {
+                mAtomsAnimatorSet.start();
+            }
+        }
+    };
 
     /**
      * 根据每个元素的状态和样式绘制
@@ -195,14 +224,41 @@ public abstract class AtomDrawable extends FancyDrawable {
             case CIRCLE:
                 canvas.drawCircle(atom.getLocationX(), atom.getLocationY(), 5, paint);
                 break;
+
+            case DRAWABLE:
+                drawDrawable(canvas, style, atom);
+                break;
         }
     }
 
-    public class Atom {
+    protected void drawDrawable(Canvas canvas, AtomStyle style, Atom atom) {
+        Drawable drawable = style.getDrawable();
+        int degree = atom.getRotate();
+        float x = atom.getLocationX();
+        float y = atom.getLocationY();
+
+        canvas.save();
+        canvas.translate(
+                (float) (x + (1 - 1.414f * Math.sin((45 - degree) / 180f * Math.PI)) * 20f),
+                (float) (y - (1.414f * Math.cos((45 - degree) / 180f * Math.PI) - 1) * 20f));
+        canvas.rotate(degree);
+        //canvas.translate((float) (20 / Math.cos((float) degree / 180 * Math.PI)), 0);
+        drawable.draw(canvas);
+        canvas.restore();
+    }
+
+    public static class Atom {
+        private int id = -1;
         private float delta = 0;
-        private float locationX = -1;
-        private float locationY = -1;
+        private float length = 0;
+        private float locationX = 0;
+        private float locationY = 0;
+        private int rotate = 0;
         private String text;
+
+        public Atom(int id) {
+            this.id = id;
+        }
 
         public float getLocationX() {
             return locationX;
@@ -234,6 +290,26 @@ public abstract class AtomDrawable extends FancyDrawable {
 
         public void setDelta(float delta) {
             this.delta = delta;
+        }
+
+        public int getRotate() {
+            return rotate;
+        }
+
+        public void setRotate(int rotate) {
+            this.rotate = rotate;
+        }
+
+        public int getId() {
+            return id;
+        }
+
+        public float getLength() {
+            return length;
+        }
+
+        public void setLength(float length) {
+            this.length = length;
         }
     }
 }
