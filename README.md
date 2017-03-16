@@ -1,6 +1,4 @@
-title: Android动画总结之有赞、邮箱大师进度条实现原理
-date: 2015-09-01 23:17:29
-tags: [Android,动画,进度条]
+https://ivonhoe.github.io/2015/09/01/Android%E5%8A%A8%E7%94%BB%E6%80%BB%E7%BB%93%E4%B9%8B%E6%9C%89%E8%B5%9E%E3%80%81%E9%82%AE%E7%AE%B1%E5%A4%A7%E5%B8%88%E8%BF%9B%E5%BA%A6%E6%9D%A1%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/
 ---
 
 ## 一、效果
@@ -94,7 +92,7 @@ public ObjectAnimator[] getAtomAnimator(Atom atom, Rect bound) {
 用矩阵表示为：
 ![ ](https://ivonhoe.github.io/res/android_animation2/suofang2.png)
 比例变换矩阵为：
-![ ](https://ivonhoe.github.io/res/android_animation2/suofang 3.png)
+![ ](https://ivonhoe.github.io/res/android_animation2/suofang3.png)
 ![ ](https://ivonhoe.github.io/res/android_animation2/suofangMatrix_副本.png)
 
 
